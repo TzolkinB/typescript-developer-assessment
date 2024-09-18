@@ -6,5 +6,6 @@ export default defineConfig({
       // implement node event listeners here
     },
     baseUrl: "https://lastcallmedia.com/contact",
+    chromeWebSecurity: false,
   },
 });

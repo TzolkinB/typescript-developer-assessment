@@ -1,10 +1,12 @@
 describe("Contact Page", () => {
-  it("should not submit form without checking and submitting CAPTCHA", () => {
+  beforeEach(() => {
     cy.visit("/");
     cy.url().should("include", "contact");
 
     cy.findByRole("heading", { name: "Get in touch!", level: 1 });
+  });
 
+  it("should not submit form without checking and submitting CAPTCHA", () => {
     cy.get(".lcm-contact-form").within(() => {
       cy.findByLabelText("Name")
         .should("be.empty")
@@ -19,16 +21,18 @@ describe("Contact Page", () => {
         .type("test assessment")
         .should("have.value", "test assessment");
 
-      // cy.get('.captcha__element').find('iframe').should('be.visible').as('iFrame')
-      // cy.get('@iFrame')
-      // .then($iframe => {
-      //   const iframeBody = $iframe.contents().find('body')
-      //   cy.wrap(iframeBody).first().within(() => {
-      //     // cy.findByLabelText("")
-      //     // cy.findByRole('checkbox')
-      //     cy.get('checkbox', { timeout: 6000})
-      //   })
-      // })
+      cy.get(".captcha__element")
+        .find("iframe")
+        .first()
+        .then(($iframe) => {
+          const iframeBody = $iframe.contents().find("body");
+          cy.wrap(iframeBody)
+            .first()
+            .within(() => {
+              cy.findByText("I'm not a robot");
+              cy.findByRole("checkbox").click();
+            });
+        });
 
       cy.findByRole("button", { name: "Send" }).click();
     });
@@ -38,5 +42,3 @@ describe("Contact Page", () => {
     });
   });
 });
-
-// The form on https://lastcallmedia.com/contact sometimes allows users to submit without filling out the CAPTCHA. We would like to verify that the form cannot be submitted without solving the CAPTCHA (note: no need to actually perform a successful submission here).
